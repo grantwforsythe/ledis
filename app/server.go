@@ -25,12 +25,16 @@ func main() {
 			os.Exit(1)
 		}
 
+		fmt.Println("Connection: ", conn.RemoteAddr())
+
 		err = handleConnection(conn)
 		if err != nil {
 			fmt.Println("Error handling connection: ", err.Error())
 			os.Exit(1)
 		}
 	}
+
+	fmt.Println("here")
 
 }
 
@@ -43,7 +47,7 @@ func handleConnection(conn net.Conn) error {
 		return err
 	}
 
-	fmt.Println("Recieved: ", buf[:n])
+	fmt.Printf("Recieved: %s\n", buf[:n])
 
 	_, err = conn.Write([]byte("+PONG\r\n"))
 	if err != nil {
