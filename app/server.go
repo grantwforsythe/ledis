@@ -16,14 +16,14 @@ func main() {
 		os.Exit(1)
 	}
 
+	defer listener.Close()
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection: ", err.Error())
 			os.Exit(1)
 		}
-
-		defer listener.Close()
 
 		err = handleConnection(conn)
 		if err != nil {
