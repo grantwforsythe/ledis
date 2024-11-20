@@ -21,5 +21,18 @@ func main() {
 		os.Exit(1)
 	}
 
-	conn.Write([]byte("+PONG\r\n"))
+	defer conn.Close()
+
+	payload := make([]byte, 128)
+	_, err = conn.Read(payload)
+	if err != nil {
+		fmt.Println("Failed to read incoming client request")
+		os.Exit(1)
+	}
+
+	_, err = conn.Write([]byte("+PONG\r\n"))
+	if err != nil {
+		fmt.Println("Failed to write 'PONG' to the connection")
+		os.Exit(1)
+	}
 }
