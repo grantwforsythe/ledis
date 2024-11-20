@@ -15,34 +15,38 @@ func main() {
 
 	defer listener.Close()
 
-	conn, err := listener.Accept()
-	if err != nil {
-		fmt.Println("Error accepting connection: ", err.Error())
-		os.Exit(1)
-	}
-
-	defer conn.Close()
-
 	for {
-		err = handlePing(conn)
+		conn, err := listener.Accept()
 		if err != nil {
+			fmt.Println("Error accepting connection: ", err.Error())
+			os.Exit(1)
+		}
+
+		defer conn.Close()
+
+		errCh := make(chan error)
+		fmt.Println("Channel: ", <-errCh)
+		go handlePing(conn, errCh)
+		if <-errCh != nil {
 			fmt.Println("Error handling connection: ", err.Error())
 			os.Exit(1)
 		}
 	}
 }
 
-func handlePing(conn net.Conn) error {
+func handlePing(conn net.Conn, errCh chan<- error) {
 	buf := make([]byte, 1024)
 	_, err := conn.Read(buf)
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
 	_, err = conn.Write([]byte("+PONG\r\n"))
 	if err != nil {
-		return err
+		errCh <- err
+		return
 	}
 
-	return nil
+	errCh <- nil
 }
