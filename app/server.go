@@ -38,10 +38,12 @@ func handleConnection(conn net.Conn) error {
 	defer conn.Close()
 
 	buf := make([]byte, 1024)
-	_, err := conn.Read(buf)
+	n, err := conn.Read(buf)
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("Recieved: ", buf[:n])
 
 	_, err = conn.Write([]byte("+PONG\r\n"))
 	if err != nil {
